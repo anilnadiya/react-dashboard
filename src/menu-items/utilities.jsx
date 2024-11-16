@@ -26,6 +26,20 @@ const utilities = {
   type: 'group',
   children: [
     {
+      id: 'util-client',
+      title: 'Client',
+      type: 'item',
+      url: '/client',
+      icon: icons.FontSizeOutlined
+    },    
+    {
+      id: 'util-user',
+      title: 'User',
+      type: 'item',
+      url: '/users',
+      icon: icons.FontSizeOutlined
+    },    
+    {
       id: 'util-typography',
       title: 'Typography',
       type: 'item',
