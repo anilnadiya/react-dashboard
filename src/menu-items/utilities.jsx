@@ -40,6 +40,14 @@ const utilities = {
       icon: icons.FontSizeOutlined
     },    
     {
+      id: 'util-dashpage',
+      title: 'Dashboard page',
+      type: 'item',
+      url: '/dashboardpage',
+      icon: icons.FontSizeOutlined
+    },    
+
+    {
       id: 'util-typography',
       title: 'Typography',
       type: 'item',
