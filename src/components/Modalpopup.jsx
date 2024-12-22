@@ -21,14 +21,14 @@ const Modalpopup = ({ open, handleClose }) => {
     console.log('open', open)
     const [addClient] = useAddClientMutation();
 
-    const handleFormSubmit = async (values, {setSubmitting, resetForm}) => {
+    const handleFormSubmit = async (values, { setSubmitting, resetForm }) => {
         console.log('values', values);
         try {
-            await addClient(values).unwrap(); 
+            await addClient(values).unwrap();
             resetForm();
         } catch (error) {
             console.log('error', error)
-        } finally{
+        } finally {
             setSubmitting(false)
         }
 
@@ -45,17 +45,18 @@ const Modalpopup = ({ open, handleClose }) => {
                 aria-describedby="keep-mounted-modal-description"
             >
                 <Box sx={style}>
-                    <Typography id="keep-mounted-modal-title" variant="h6" component="h2">
-                        Text in a modal
-                    </Typography>
-                    {/* <Typography id="keep-mounted-modal-description" sx={{ mt: 2 }}>
-                    Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                  </Typography> */}
                     <div>
-                        <Formik initialValues={{ vUserName: '', vEmailAddress: '',vWebsite: '', }} validationSchema={Yup.object().shape({
+                        <Grid item xs={12}>
+                            <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
+                                <Typography variant="h3">Create client</Typography>
+                            </Stack>
+                        </Grid>
+                    </div>
+                    <div>
+                        <Formik initialValues={{ vUserName: '', vEmailAddress: '', vWebsite: '', }} validationSchema={Yup.object().shape({
                             vUserName: Yup.string(3).required("Company name is requires ")
-                            
-                        } )} onSubmit={ handleFormSubmit } >
+
+                        })} onSubmit={handleFormSubmit} >
                             {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                                 <form noValidate onSubmit={handleSubmit} >
                                     <Grid container spacing={3} >

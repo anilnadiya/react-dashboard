@@ -1,174 +1,93 @@
-import PropTypes from 'prop-types';
-// material-ui
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
-// third-party
-import { NumericFormat } from 'react-number-format';
-
-// project import
-import Dot from 'components/@extended/Dot';
+import React, { useState } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { Button } from '@mui/material';
 
 // Fetch data function
-const fetchData = async () => {
-  const response = await fetch('http://localhost:5000/clients');
-  if (!response.ok) throw new Error('Network response was not ok');
-  return response.json();
+const fetchData = async ({ page, limit }) => {
+  console.log('page====>fetch', page)
+  const response = await axios.get('http://localhost:5000/clients', {
+    params: {
+      page: page + 1, // Assuming API is 1-indexed
+      size: limit,
+    },
+  });
+  console.log('response', response)
+  return response.data;
 };
 
-function createData(iClientId, vUserName, vCodeRights, dtCreationDate) {
-  return { iClientId, vUserName, vCodeRights, dtCreationDate };
-}
+const columns = [
+  { field: 'iClientId', headerName: 'ID', flex: 1 },
+  { field: 'vUserName', headerName: 'Name', flex: 2 },
+  { field: 'vWebsite', headerName: 'Website', flex: 3 },
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    flex: 1,
+    renderCell: (params) => (
+      <Button variant="contained" color="primary" onClick={() => params.row.handleEdit(params.row)}>
+        Edit
+      </Button>
+    ),
 
-const headCells = [
-  {
-    id: 'iClientId',
-    align: 'left',
-    disablePadding: false,
-    label: '#',
   },
-  {
-    id: 'vUserName',
-    align: 'left',
-    disablePadding: true,
-    label: 'Full Name',
-  },
-  {
-    id: 'vCodeRights',
-    align: 'left',
-    disablePadding: false,
-    label: 'Code',
-  },
-  {
-    id: 'dtCreationDate',
-    align: 'left',
-    disablePadding: false,
-    label: 'Created Date',
-  }
+
 ];
 
-function OrderTableHead({ order, orderBy }) {
-  return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.align}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            {headCell.label}
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
+
+export default function ClientTable({onEdit}) {
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
+  const [sortModel, setSortModel] = useState([])
+  const [filterModel, setFilterModel] = useState({ items: [] })
+  console.log('paginationModel', paginationModel)
+  console.log('sortModel', sortModel)
+  console.log('filterModel', filterModel)
+
+  const { data, isLoading, error } = useQuery(
+    {
+      queryKey: ['ClientItem', paginationModel.page, paginationModel.pageSize],
+      queryFn: () => fetchData({ page: paginationModel.page, limit: paginationModel.pageSize }),
+      keepPreviousData: true
+    }
   );
-}
 
-function OrderStatus({ status }) {
-  let color;
-  let title;
+  console.log('data--ract-query', data)
+  const rows = data?.data.map((item, index) => ({
+    id: index,
+    iClientId: item.iClientId,
+    vUserName: item.vUserName,
+    handleEdit: onEdit,
+  }));
 
-  switch (status) {
-    case 0:
-      color = 'warning';
-      title = 'Pending';
-      break;
-    case 1:
-      color = 'success';
-      title = 'Approved';
-      break;
-    case 2:
-      color = 'error';
-      title = 'Rejected';
-      break;
-    default:
-      color = 'primary';
-      title = 'None';
-  }
 
-  return (
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Dot color={color} />
-      <Typography>{title}</Typography>
-    </Stack>
-  );
-}
+  console.log('rows=========>', rows)
 
-export default function OrderTable() {
-  const order = 'asc';
-  const orderBy = 'iClientId';
-
-  // Fetch data using react-query
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchData,
-  });
-
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div > Loading... {isLoading} </div>
   if (error) return <div>Error: {error.message}</div>;
 
-  const rows = data.map((user) =>
-    createData(user.iClientId, user.vUserName, user.vCodeRights, user.dtCreationDate)
-  );
+  return <div style={{ height: 400, width: '100%' }}>
+    <DataGrid
+      rows={rows || []}
+      columns={columns || []}
+      pagination
+      paginationMode="server"
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      onSortModelChange={ (newSortModel)=> sortModel(newSortModel)}
+      onFilterModelChange={ (newFilterModel ) => setFilterModel(newFilterModel) }
+      pageSizeOptions={[10, 20, 50]}
+      rowCount={data?.totalItems || 0}
+      loading={isLoading}
+      sx={{
+        '& .MuiDataGrid-columnHeaders': {
+          backgroundColor: '#f5f5f5',
+        },
+        '& .MuiDataGrid-row:hover': {
+          backgroundColor: '#f0f0f0',
+        },
+      }}
+    />
 
-  return (
-    <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
-        }}
-      >
-        <Table aria-labelledby="tableTitle">
-          <OrderTableHead order={order} orderBy={orderBy} />
-          <TableBody>
-            {rows.map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-              return (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row.iClientId}
-                >
-                  <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.iClientId}</Link>
-                  </TableCell>
-                  <TableCell>{row.vUserName}</TableCell>
-                  <TableCell align="center">{row.vCodeRights}</TableCell>
-                  <TableCell >{row.dtCreationDate}</TableCell>
-                  
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
+  </div>;
 }
-
-OrderTableHead.propTypes = {
-  order: PropTypes.any,
-  orderBy: PropTypes.string,
-};
-
-OrderStatus.propTypes = {
-  status: PropTypes.number,
-};
