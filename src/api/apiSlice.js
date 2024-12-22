@@ -32,10 +32,17 @@ export const apiSlice = createApi({
                 method: 'put',
                 data: updateClientData
             })
+        }),
+        deleteClient: builder.mutation({
+            query: ({id}) => ({
+                url: `clients/${id}`,
+                method: 'delete',
+                //data: updateClientData
+            })
         })
 
     })
 
 })
 
-export const { useAddClientMutation, useUpdateClientMutation } = apiSlice;
+export const { useAddClientMutation, useUpdateClientMutation, useDeleteClientMutation } = apiSlice;

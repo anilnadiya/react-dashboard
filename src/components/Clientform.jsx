@@ -28,7 +28,7 @@ const Clientform = ({ clientData }) => {
         console.log('values', values);
         try {
             if (isEditing) {
-                updateClient({id: clientData.iClientId, ...values}).unwrap();
+                await updateClient({id: clientData.iClientId, ...values}).unwrap();
             } else {
                 await addClient(values).unwrap();
             }

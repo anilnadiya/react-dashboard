@@ -36,6 +36,7 @@ const customStyles = {
 export default function ComponentTypography() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [deleteClient, setDeletedClient] = useState(null);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
