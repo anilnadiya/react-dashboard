@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AnimateButton from './@extended/AnimateButton';
-import { useAddClientMutation } from 'api/apiSlice';
+import { useAddClientMutation, useUpdateClientMutation } from 'api/apiSlice';
 
 const style = {
     position: 'absolute',
@@ -17,15 +17,21 @@ const style = {
     p: 4,
 };
 
-const Clientform = ({clientData}) => {
+const Clientform = ({ clientData }) => {
     const [addClient] = useAddClientMutation();
+    const [updateClient] = useUpdateClientMutation();
+    const isEditing = Boolean(clientData)
 
-    console.log('clientData',clientData)
+    console.log('clientData', clientData)
 
     const handleFormSubmit = async (values, { setSubmitting, resetForm }) => {
         console.log('values', values);
         try {
-            await addClient(values).unwrap();
+            if (isEditing) {
+                updateClient({id: clientData.iClientId, ...values}).unwrap();
+            } else {
+                await addClient(values).unwrap();
+            }
             resetForm();
         } catch (error) {
             console.log('error', error)
@@ -34,6 +40,13 @@ const Clientform = ({clientData}) => {
         }
 
     }
+
+    const initialValues = isEditing
+        ? {
+            vUserName: clientData?.vUserName || '',
+            vEmailAddress: clientData?.vEmailAddress || '',
+            vWebsite: clientData?.vWebsite || '',
+        } : { vUserName: '', vEmailAddress: '', vWebsite: '' };
 
     return (
         <div>
@@ -47,7 +60,7 @@ const Clientform = ({clientData}) => {
                     </Grid>
                 </div>
                 <div>
-                    <Formik initialValues={{ vUserName: '', vEmailAddress: '', vWebsite: '', }} validationSchema={Yup.object().shape({
+                    <Formik initialValues={initialValues} validationSchema={Yup.object().shape({
                         vUserName: Yup.string(3).required("Company name is requires ")
 
                     })} onSubmit={handleFormSubmit} >

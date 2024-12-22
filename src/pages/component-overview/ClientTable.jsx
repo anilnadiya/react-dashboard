@@ -36,7 +36,7 @@ const columns = [
 ];
 
 
-export default function ClientTable({onEdit}) {
+export default function ClientTable({ onEdit }) {
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
   const [sortModel, setSortModel] = useState([])
   const [filterModel, setFilterModel] = useState({ items: [] })
@@ -57,6 +57,8 @@ export default function ClientTable({onEdit}) {
     id: index,
     iClientId: item.iClientId,
     vUserName: item.vUserName,
+    vEmailAddress: item.vEmailAddress,
+    vWebsite: item.vWebsite,
     handleEdit: onEdit,
   }));
 
@@ -74,8 +76,8 @@ export default function ClientTable({onEdit}) {
       paginationMode="server"
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
-      onSortModelChange={ (newSortModel)=> sortModel(newSortModel)}
-      onFilterModelChange={ (newFilterModel ) => setFilterModel(newFilterModel) }
+      onSortModelChange={(newSortModel) => sortModel(newSortModel)}
+      onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}
       pageSizeOptions={[10, 20, 50]}
       rowCount={data?.totalItems || 0}
       loading={isLoading}

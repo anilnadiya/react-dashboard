@@ -57,7 +57,7 @@ export default function ComponentTypography() {
             <Grid item>
               <Button onClick={openModal}>Add</Button>
               <GlobalModal isOpen={isModalOpen} onClose={closeModal} customStyles={customStyles}>
-                <Clientform />
+                <Clientform clientData={selectedClient} />
               </GlobalModal>
             </Grid>
             <Grid item />
