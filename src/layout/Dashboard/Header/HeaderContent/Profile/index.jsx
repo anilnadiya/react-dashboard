@@ -29,6 +29,10 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import { useDispatch } from 'react-redux';
+import { LOGOUT } from 'contexts/auth-reducer/actions';
+import { useNavigate } from 'react-router';
+import axios from 'axios';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -50,6 +54,8 @@ function a11yProps(index) {
 
 export default function Profile() {
   const theme = useTheme();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -71,6 +77,15 @@ export default function Profile() {
   };
 
   const iconBackColorOpen = 'grey.100';
+
+  const handleLogout = () => {
+    console.log('Logging out...');
+    localStorage.setItem('authToken', ''); // Clear auth token
+    axios.defaults.headers.common['Authorization'] = ''; // Clear authorization header
+    dispatch({ type: LOGOUT }); // Dispatch logout action to the Redux store
+    navigate('/login'); // Redirect to login page
+  };
+  
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -170,7 +185,7 @@ export default function Profile() {
                     </Tabs>
                   </Box>
                   <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab />
+                    <ProfileTab handleLogout={handleLogout} />
                   </TabPanel>
                   <TabPanel value={value} index={1} dir={theme.direction}>
                     <SettingTab />

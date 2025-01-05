@@ -11,6 +11,7 @@ export const initialState = {
 // ==============================|| AUTH REDUCER ||============================== //
 
 const auth = (state = initialState, action) => {
+  console.log('action=>',action)
   switch (action.type) {
     case REGISTER: {
       const { user } = action.payload;

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import { useDeleteClientMutation } from 'api/apiSlice';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function ClientTable({ onEdit }) {
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
@@ -13,10 +15,12 @@ export default function ClientTable({ onEdit }) {
   const [selectedClient, setSelectedClient] = useState(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(null);
 
+  const baseUrl = import.meta.env.VITE_APP_API_BASE_URL
+
   // Fetch data function
   const fetchData = async ({ page, limit }) => {
     console.log('page====>fetch', page)
-    const response = await axios.get('http://localhost:5000/clients', {
+    const response = await axios.get(baseUrl + 'clientsList', {
       params: {
         page: page + 1, // Assuming API is 1-indexed
         size: limit,
@@ -81,12 +85,24 @@ export default function ClientTable({ onEdit }) {
       flex: 1,
       renderCell: (params) => (
         <>
-          <Button variant="contained" color="primary" onClick={() => params.row.handleEdit(params.row)}>
+
+          <Tooltip title="Edit">
+            <IconButton variant="contained" color="primary" onClick={() => params.row.handleEdit(params.row)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton variant="contained" color="primary" onClick={() => handleDeleteClick(params.row)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* <Button variant="contained" color="primary" onClick={() => params.row.handleEdit(params.row)}>
             Edit
           </Button>
           <Button variant="contained" color="primary" onClick={() => handleDeleteClick(params.row)}>
             Delete
-          </Button>
+          </Button> */}
         </>
 
       ),

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -28,11 +28,18 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
+import { useLoginUserMutation } from 'api/apiSlice';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { LOGOUT } from 'contexts/auth-reducer/actions';
 
 // ============================|| JWT - LOGIN ||============================ //
 
 export default function AuthLogin({ isDemo = false }) {
   const [checked, setChecked] = React.useState(false);
+  const [loginUser] = useLoginUserMutation();
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
 
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => {
@@ -42,6 +49,34 @@ export default function AuthLogin({ isDemo = false }) {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  axios.defaults.baseURL = import.meta.env.VITE_APP_API_BASE_URL;
+
+  const handleFormSubmit = async (values, { setSubmitting, resetForm }) => {
+    console.log('values', values);
+    try {
+      const response = await loginUser(values).unwrap();
+      const token = response?.session_data?.vPassword;
+      const userData = response?.session_data ?? [];
+      console.log('token', token)
+      if (token) {
+        // Set the token in Axios headers
+        localStorage.setItem('authToken', token);
+        axios.defaults.headers.common['Authorization'] = `${token}`;
+        console.log('Token set successfully:', token);
+        dispatch( { type: LOGOUT, user: userData } )
+
+        navigate('/dashboard/default')
+      }
+
+      resetForm();
+    } catch (error) {
+      console.log('error', error)
+    } finally {
+      setSubmitting(false)
+    }
+
+  }
 
   return (
     <>
@@ -55,6 +90,8 @@ export default function AuthLogin({ isDemo = false }) {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
+
+        onSubmit={handleFormSubmit}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>

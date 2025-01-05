@@ -27,8 +27,9 @@
     "@fontsource/public-sans": "^5.0.17",
     "@fontsource/roboto": "^5.0.12",
     "@mui/base": "^5.0.0-beta.38",
+    "@mui/icons-material": "^5.16.13",
     "@mui/lab": "^5.0.0-alpha.167",
-    "@mui/material": "^5.15.12",
+    "@mui/material": "^5.16.13",
     "@mui/system": "^5.15.12",
     "@mui/x-data-grid": "^7.23.0",
     "@reduxjs/toolkit": "^2.5.0",
@@ -39,6 +40,7 @@
     "axios": "^1.7.9",
     "formik": "^2.4.5",
     "framer-motion": "^11.0.8",
+    "http-proxy-middleware": "^3.0.3",
     "lodash": "^4.17.21",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
@@ -99,5 +101,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.2.5",
     "react-error-overlay": "6.0.11"
-  }
+  },
+  "proxy": "http://localhost/tmsapi/api/v1"
 }

@@ -2,7 +2,7 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Box, Button } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 //import { Box, Button, Modal } from '@mui/material';
 
 // project import
@@ -34,6 +34,9 @@ const customStyles = {
 
 
 export default function ComponentTypography() {
+
+  const baseUrl = import.meta.env.VITE_APP_API_BASE_URL
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [deleteClient, setDeletedClient] = useState(null);
